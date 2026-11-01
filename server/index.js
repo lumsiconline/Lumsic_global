@@ -21,7 +21,14 @@ const authClient=URL&&ANON?createClient(URL,ANON,{auth:{persistSession:false,aut
 
 app.disable("x-powered-by");
 app.set("trust proxy",1);
-app.use(helmet());
+app.use(helmet({contentSecurityPolicy:{directives:{
+ "default-src":["'self'"],
+ "script-src":["'self'"],
+ "style-src":["'self'","'unsafe-inline'","https://fonts.googleapis.com"],
+ "font-src":["'self'","https://fonts.gstatic.com","data:"],
+ "img-src":["'self'","data:","https:"],
+ "connect-src":["'self'","https://*.supabase.co","wss://*.supabase.co"]
+}}}));
 app.use(cors({origin(origin,cb){if(!origin||!prod||origins.includes(origin))return cb(null,true);return cb(new Error("Origin not allowed"));},methods:["GET","POST","OPTIONS"],allowedHeaders:["Authorization","Content-Type"],credentials:false,maxAge:600}));
 app.use(express.json({limit:"16kb",strict:true}));
 app.use("/api",rateLimit({windowMs:60000,limit:100,standardHeaders:"draft-7",legacyHeaders:false}));
@@ -37,7 +44,7 @@ async function authenticate(req,res,next){
   const {data:rows,error:roleError}=await db.from("user_roles").select("role").eq("user_id",req.user.id);
   if(roleError)throw roleError;
   req.roles=(rows||[]).map(x=>x.role);
-  req.admin=req.roles.some(x=>["admin","super_admin","operations_admin","chat_admin","content_admin","finance_admin"].includes(x));
+  req.admin=req.roles.some(x=>["admin","super_admin","operations_admin","chat_admin"].includes(x));
   req.astrologer=req.roles.includes("astrologer");
   if(req.astrologer){const {data:reader,error:readerError}=await db.from("readers").select("id,astro_id,name,email").ilike("email",req.user.email||"").maybeSingle();if(readerError)throw readerError;req.reader=reader||null;}
   next();
