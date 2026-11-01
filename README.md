@@ -26,5 +26,8 @@ React + JavaScript customer experience with a Node.js/Express API and Supabase a
 ## Existing database
 Uses existing `profiles`, `user_roles`, `readers`, `consultation_sessions` and `chat_messages` tables. No automatic migrations or database modifications are run.
 
+## CI workflow
+GitHub Actions runs the install, frontend build and Docker build checks on every push to `main` and on pull requests targeting `main`.
+
 ## Still required before production
 Payments/wallet, reader onboarding, admin assignment and transfer actions, realtime delivery, password-reset completion UX, monitoring, full end-to-end tests, and production secrets/configuration still need implementation and verification.
