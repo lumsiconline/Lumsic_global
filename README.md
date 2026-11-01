@@ -1,28 +1,30 @@
 # Lumsic Global
 
-A React + TypeScript + Vite frontend foundation for the Lumsic global reader platform.
+React + JavaScript customer experience with a Node.js/Express API and Supabase auth/database integration.
 
-## Development
+## Routes
+- `/` public website
+- `/login`, `/signup`, `/forgot-password` account access
+- `/account` customer area
+- `/admin` protected admin workspace
+- `/astrologer` protected astrologer workspace
+- `/chat/:sessionId` protected direct chat route
 
-```bash
-npm install
-npm run dev
-```
+## Local setup
+1. Copy `.env.example` to `.env` and fill in Supabase project values.
+2. Run `npm install`.
+3. Run `npm run dev` (Vite client + Express API).
 
-## Build
+## Security foundations
+- Supabase access tokens are verified server-side on every protected API request.
+- Roles are read from `public.user_roles`, never user-editable metadata.
+- Admin, astrologer and customer session access is enforced by the API.
+- Astrologers are linked to reader records by account email and can access only assigned sessions.
+- Service-role key is server-only; never expose it in VITE_ variables.
+- Helmet headers, production CORS allowlist, JSON size limit and API rate limiting are enabled.
 
-```bash
-npm run build
-```
+## Existing database
+Uses existing `profiles`, `user_roles`, `readers`, `consultation_sessions` and `chat_messages` tables. No automatic migrations or database modifications are run.
 
-## Current implementation status
-
-- Responsive public landing page and navigation
-- Brand styling using warm ivory, plum, lavender and champagne tones
-- Currency selector UI (manual selection only at this stage)
-- Reader directory placeholder; no fictional reader identities, ratings or prices are presented as real
-- How-it-works and brand approach sections
-
-## Not yet connected
-
-Authentication, live reader availability, chat, payments, geolocation-based country detection, live exchange rates, admin and astrologer dashboards, and the existing production backend are not connected yet. Those require confirmed API/database contracts and secure role-based integration.
+## Still required before production
+Payments/wallet, reader onboarding, admin assignment and transfer actions, realtime delivery, password-reset completion UX, monitoring, full end-to-end tests, and production secrets/configuration still need implementation and verification.
